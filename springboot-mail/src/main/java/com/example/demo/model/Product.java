@@ -2,7 +2,7 @@ package com.example.demo.model;
 
 import java.util.Date;
 
-import constant.ProductCategory;
+import com.example.demo.constant.ProductCategory;
 
 public class Product {
 	

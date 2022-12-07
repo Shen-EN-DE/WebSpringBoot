@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.example.demo.model.Product;
 
-import constant.ProductCategory;
+import com.example.demo.constant.ProductCategory;
 
 public class ProductRowMapper implements RowMapper<Product>{
 
