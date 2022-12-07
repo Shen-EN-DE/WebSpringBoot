@@ -4,11 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.example.demo.dao.ProductDao;
+import com.example.demo.dto.ProductRequest;
 import com.example.demo.model.Product;
 
 @Component
 public class ProductServiceImpl implements ProductService{
 	
+
+
 	@Autowired
 	private ProductDao productDao;
 	
@@ -18,6 +21,11 @@ public class ProductServiceImpl implements ProductService{
 		return productDao.getProductById(productId);
 		
 		
+	}
+	
+	@Override
+	public Integer createProduct(ProductRequest productRequest) {
+		return productDao.createProduct(productRequest);
 	}
 
 }
