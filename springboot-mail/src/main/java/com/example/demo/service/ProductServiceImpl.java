@@ -12,6 +12,8 @@ public class ProductServiceImpl implements ProductService{
 	
 
 
+
+
 	@Autowired
 	private ProductDao productDao;
 	
@@ -26,6 +28,12 @@ public class ProductServiceImpl implements ProductService{
 	@Override
 	public Integer createProduct(ProductRequest productRequest) {
 		return productDao.createProduct(productRequest);
+	}
+	
+	@Override
+	public void updateProduct(Integer productId, ProductRequest productRequest) {
+		
+		productDao.updateProduct(productId, productRequest);
 	}
 
 }
