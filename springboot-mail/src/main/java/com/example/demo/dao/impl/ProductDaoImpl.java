@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.example.demo.constant.ProductCategory;
 import com.example.demo.dao.ProductDao;
+import com.example.demo.dto.ProductQueryParams;
 import com.example.demo.dto.ProductRequest;
 import com.example.demo.model.Product;
 import com.fasterxml.jackson.annotation.Nulls;
@@ -29,23 +30,23 @@ public class ProductDaoImpl implements ProductDao{
 	
 	
 	@Override
-	public List<Product> getProducts(ProductCategory category, String search) {
+	public List<Product> getProducts(ProductQueryParams parProductQueryParams) {
 		String sql = "SELECT product_id, product_name, category, image_url, "
 				+ "price, stock, description, created_date, last_modified_date "
 				+ "FROM product WHERE 1=1";
 		
 		Map<String, Object> map = new HashMap<>();
 		
-		if (category != null) {
+		if (parProductQueryParams.getCategory() != null) {
 			//為甚麼用Where 1=1因為她條件一定是對的，只是單純要有一個WHERE條件而已，理由是沒有這個得話，如果多個條件，這樣每個SQL後面都要在加WHERE很麻煩
 			//，當如果不等於null的話，這樣就可以直接在後面加條件，字串+字串的意思
 			sql = sql + " AND category = :category"; 
-			map.put("category", category.name()); // 因為我們是用enum為參數，因此要用.name
+			map.put("category", parProductQueryParams.getCategory().name()); // 因為我們是用enum為參數，因此要用.name
 		}
 		
-		if (search != null) {
+		if (parProductQueryParams.getSearch() != null) {
 			sql = sql + " AND product_name LIKE :search";
-			map.put("search", "%" + search + "%");  //會友百分比是因為LIKE ，因為她是只要有包含關鍵字的都抓出來，像是"蘋果%"代表的是開頭是蘋果的都抓出來
+			map.put("search", "%" + parProductQueryParams.getSearch() + "%");  //會友百分比是因為LIKE ，因為她是只要有包含關鍵字的都抓出來，像是"蘋果%"代表的是開頭是蘋果的都抓出來
 		}
 		
 		List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
