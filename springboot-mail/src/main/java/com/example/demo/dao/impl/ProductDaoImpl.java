@@ -28,7 +28,7 @@ public class ProductDaoImpl implements ProductDao{
 	
 	
 	@Override
-	public List<Product> getProducts(ProductQueryParams parProductQueryParams) {
+	public List<Product> getProducts(ProductQueryParams productQueryParams) {
 		String sql = "SELECT product_id, product_name, category, image_url, "
 				+ "price, stock, description, created_date, last_modified_date "
 				+ "FROM product WHERE 1=1";
@@ -36,25 +36,25 @@ public class ProductDaoImpl implements ProductDao{
 		Map<String, Object> map = new HashMap<>();
 		
 		//查詢條件
-		if (parProductQueryParams.getCategory() != null) {
+		if (productQueryParams.getCategory() != null) {
 			//為甚麼用Where 1=1因為她條件一定是對的，只是單純要有一個WHERE條件而已，理由是沒有這個得話，如果多個條件，這樣每個SQL後面都要在加WHERE很麻煩
 			//，當如果不等於null的話，這樣就可以直接在後面加條件，字串+字串的意思
 			sql = sql + " AND category = :category"; 
-			map.put("category", parProductQueryParams.getCategory().name()); // 因為我們是用enum為參數，因此要用.name
+			map.put("category", productQueryParams.getCategory().name()); // 因為我們是用enum為參數，因此要用.name
 		}
 		
-		if (parProductQueryParams.getSearch() != null) {
+		if (productQueryParams.getSearch() != null) {
 			sql = sql + " AND product_name LIKE :search";
-			map.put("search", "%" + parProductQueryParams.getSearch() + "%");  //會友百分比是因為LIKE ，因為她是只要有包含關鍵字的都抓出來，像是"蘋果%"代表的是開頭是蘋果的都抓出來
+			map.put("search", "%" + productQueryParams.getSearch() + "%");  //會友百分比是因為LIKE ，因為她是只要有包含關鍵字的都抓出來，像是"蘋果%"代表的是開頭是蘋果的都抓出來
 		}
 		
 		//排序
-		sql = sql + " ORDER BY " + parProductQueryParams.getOrderBy() + " " + parProductQueryParams.getSort();
+		sql = sql + " ORDER BY " + productQueryParams.getOrderBy() + " " + productQueryParams.getSort();
 		
 		//分頁
 		sql = sql + " LIMIT :limit OFFSET :offset";
-		map.put("limit", parProductQueryParams.getLimit());
-		map.put("offset", parProductQueryParams.getOffset());
+		map.put("limit", productQueryParams.getLimit());
+		map.put("offset", productQueryParams.getOffset());
 		
 		
 		List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
@@ -144,12 +144,36 @@ public class ProductDaoImpl implements ProductDao{
 
 	@Override
 	public void deleteProductAll() {
-		String str = "DELETE FROM product";
+		String sql = "DELETE FROM product";
 		
 		Map<String, Object> map = new HashMap<>();
 		
-		namedParameterJdbcTemplate.update(str, map);
+		namedParameterJdbcTemplate.update(sql, map);
 
+	}
+
+	@Override
+	public Integer countProduct(ProductQueryParams productQueryParams) {
+		String sql = "SELECT count(*) FROM product WHERE 1=1";
+		
+		Map<String, Object> map = new HashMap<>();
+		
+		//查詢條件
+		if (productQueryParams.getCategory() != null) {
+			//為甚麼用Where 1=1因為她條件一定是對的，只是單純要有一個WHERE條件而已，理由是沒有這個得話，如果多個條件，這樣每個SQL後面都要在加WHERE很麻煩
+			//，當如果不等於null的話，這樣就可以直接在後面加條件，字串+字串的意思
+			sql = sql + " AND category = :category"; 
+			map.put("category", productQueryParams.getCategory().name()); // 因為我們是用enum為參數，因此要用.name
+		}
+		
+		if (productQueryParams.getSearch() != null) {
+			sql = sql + " AND product_name LIKE :search";
+			map.put("search", "%" + productQueryParams.getSearch() + "%");  //會友百分比是因為LIKE ，因為她是只要有包含關鍵字的都抓出來，像是"蘋果%"代表的是開頭是蘋果的都抓出來
+		}
+		
+		Integer total =  namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class); //Integer.class是因為我們要回傳的參數是要式Integer類型
+		
+		return total;
 	}
 	
 	

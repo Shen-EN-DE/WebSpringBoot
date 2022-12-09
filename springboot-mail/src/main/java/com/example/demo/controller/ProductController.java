@@ -10,6 +10,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -27,6 +28,7 @@ import com.example.demo.dto.ProductQueryParams;
 import com.example.demo.dto.ProductRequest;
 import com.example.demo.model.Product;
 import com.example.demo.service.ProductService;
+import com.example.demo.util.Page;
 
 @Validated
 @RestController
@@ -36,7 +38,7 @@ public class ProductController {
 	private ProductService productService;
 	
 	@GetMapping("/products")
-	public ResponseEntity<List<Product>> getProducts(
+	public ResponseEntity<Page<Product>> getProducts(
 			//查詢條件 Filtering
 			@RequestParam(required = false) ProductCategory category, //因為category並不是必選的狀態，因此required=false這樣就不會綁住了
 			@RequestParam(required = false) String search,
@@ -58,9 +60,20 @@ public class ProductController {
 		productQueryParams.setLimit(limit);
 		productQueryParams.setOffset(offset);
 		
+		//取得product list
 		List<Product> productList = productService.getProducts(productQueryParams);
 		
-		return ResponseEntity.status(HttpStatus.OK).body(productList);
+		//取得product總數
+		Integer total = productService.countProduct(productQueryParams);
+		
+		//分頁
+		Page<Product> page = new Page<>();
+		page.setLimit(limit);
+		page.setOffset(offset);
+		page.setTotal(total);
+		page.setResult(productList);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(page);
 		
 	}
 	
