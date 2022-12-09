@@ -36,17 +36,7 @@ public class ProductDaoImpl implements ProductDao{
 		Map<String, Object> map = new HashMap<>();
 		
 		//查詢條件
-		if (productQueryParams.getCategory() != null) {
-			//為甚麼用Where 1=1因為她條件一定是對的，只是單純要有一個WHERE條件而已，理由是沒有這個得話，如果多個條件，這樣每個SQL後面都要在加WHERE很麻煩
-			//，當如果不等於null的話，這樣就可以直接在後面加條件，字串+字串的意思
-			sql = sql + " AND category = :category"; 
-			map.put("category", productQueryParams.getCategory().name()); // 因為我們是用enum為參數，因此要用.name
-		}
-		
-		if (productQueryParams.getSearch() != null) {
-			sql = sql + " AND product_name LIKE :search";
-			map.put("search", "%" + productQueryParams.getSearch() + "%");  //會友百分比是因為LIKE ，因為她是只要有包含關鍵字的都抓出來，像是"蘋果%"代表的是開頭是蘋果的都抓出來
-		}
+		sql = addFilteringSql(sql, map, productQueryParams);
 		
 		//排序
 		sql = sql + " ORDER BY " + productQueryParams.getOrderBy() + " " + productQueryParams.getSort();
@@ -159,6 +149,16 @@ public class ProductDaoImpl implements ProductDao{
 		Map<String, Object> map = new HashMap<>();
 		
 		//查詢條件
+		sql = addFilteringSql(sql, map, productQueryParams);
+		
+		Integer total =  namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class); //Integer.class是因為我們要回傳的參數是要式Integer類型
+		
+		return total;
+	}
+	
+	
+	private String addFilteringSql(String sql, Map<String, Object> map, ProductQueryParams productQueryParams) {
+		//查詢條件
 		if (productQueryParams.getCategory() != null) {
 			//為甚麼用Where 1=1因為她條件一定是對的，只是單純要有一個WHERE條件而已，理由是沒有這個得話，如果多個條件，這樣每個SQL後面都要在加WHERE很麻煩
 			//，當如果不等於null的話，這樣就可以直接在後面加條件，字串+字串的意思
@@ -171,13 +171,8 @@ public class ProductDaoImpl implements ProductDao{
 			map.put("search", "%" + productQueryParams.getSearch() + "%");  //會友百分比是因為LIKE ，因為她是只要有包含關鍵字的都抓出來，像是"蘋果%"代表的是開頭是蘋果的都抓出來
 		}
 		
-		Integer total =  namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class); //Integer.class是因為我們要回傳的參數是要式Integer類型
-		
-		return total;
+		return sql;
 	}
-	
-	
-	
 
 	
 }
