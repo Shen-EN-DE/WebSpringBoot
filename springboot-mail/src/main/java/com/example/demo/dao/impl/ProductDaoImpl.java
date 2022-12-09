@@ -49,6 +49,8 @@ public class ProductDaoImpl implements ProductDao{
 			map.put("search", "%" + parProductQueryParams.getSearch() + "%");  //會友百分比是因為LIKE ，因為她是只要有包含關鍵字的都抓出來，像是"蘋果%"代表的是開頭是蘋果的都抓出來
 		}
 		
+		sql = sql + " ORDER BY " + parProductQueryParams.getOrderBy() + " " + parProductQueryParams.getSort();
+		
 		List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
 		
 		return productList;

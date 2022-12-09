@@ -33,13 +33,20 @@ public class ProductController {
 	
 	@GetMapping("/products")
 	public ResponseEntity<List<Product>> getProducts(
+			//查詢條件 Filtering
 			@RequestParam(required = false) ProductCategory category, //因為category並不是必選的狀態，因此required=false這樣就不會綁住了
-			@RequestParam(required = false) String search
+			@RequestParam(required = false) String search,
+			
+			//排序 sorting
+			@RequestParam(defaultValue = "created_date") String orderBy,  //判斷要用甚麼欄位排序  因為正常來講都會預設最新的在最前面
+			@RequestParam(defaultValue = "desc") String sort  //要排大還是小
 			){
 		
 		ProductQueryParams productQueryParams = new ProductQueryParams();
 		productQueryParams.setCategory(category);
 		productQueryParams.setSearch(search);
+		productQueryParams.setOrderBy(orderBy);
+		productQueryParams.setSort(sort);
 		
 		List<Product> productList = productService.getProducts(productQueryParams);
 		
