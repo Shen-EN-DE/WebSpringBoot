@@ -10,12 +10,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import com.example.demo.constant.ProductCategory;
 import com.example.demo.dao.ProductDao;
 import com.example.demo.dto.ProductQueryParams;
 import com.example.demo.dto.ProductRequest;
 import com.example.demo.model.Product;
-import com.fasterxml.jackson.annotation.Nulls;
 
 import rowmapper.ProductRowMapper;
 
@@ -37,6 +35,7 @@ public class ProductDaoImpl implements ProductDao{
 		
 		Map<String, Object> map = new HashMap<>();
 		
+		//查詢條件
 		if (parProductQueryParams.getCategory() != null) {
 			//為甚麼用Where 1=1因為她條件一定是對的，只是單純要有一個WHERE條件而已，理由是沒有這個得話，如果多個條件，這樣每個SQL後面都要在加WHERE很麻煩
 			//，當如果不等於null的話，這樣就可以直接在後面加條件，字串+字串的意思
@@ -49,7 +48,14 @@ public class ProductDaoImpl implements ProductDao{
 			map.put("search", "%" + parProductQueryParams.getSearch() + "%");  //會友百分比是因為LIKE ，因為她是只要有包含關鍵字的都抓出來，像是"蘋果%"代表的是開頭是蘋果的都抓出來
 		}
 		
+		//排序
 		sql = sql + " ORDER BY " + parProductQueryParams.getOrderBy() + " " + parProductQueryParams.getSort();
+		
+		//分頁
+		sql = sql + " LIMIT :limit OFFSET :offset";
+		map.put("limit", parProductQueryParams.getLimit());
+		map.put("offset", parProductQueryParams.getOffset());
+		
 		
 		List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
 		
