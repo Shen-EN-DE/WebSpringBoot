@@ -1,7 +1,10 @@
 package com.example.demo.controller;
 
 
-import javax.annotation.PostConstruct;
+
+
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.condition.ProducesRequestCondition;
 
 import com.example.demo.dto.ProductRequest;
 import com.example.demo.model.Product;
@@ -26,6 +28,14 @@ public class ProductController {
 	@Autowired
 	private ProductService productService;
 	
+	@GetMapping("/products")
+	public ResponseEntity<List<Product>> getProducts(){
+		List<Product> productList = productService.getProducts();
+		
+		return ResponseEntity.status(HttpStatus.OK).body(productList);
+		
+	}
+	
 	@GetMapping("/products/{productId}")
 	public ResponseEntity<Product> getProduct(@PathVariable Integer productId){
 		Product product = productService.getProductById(productId);
@@ -36,8 +46,6 @@ public class ProductController {
 		}else {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
-		
-		
 		
 	}
 	
