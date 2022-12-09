@@ -2,12 +2,13 @@ package com.example.demo.dao;
 
 import java.util.List;
 
+import com.example.demo.constant.ProductCategory;
 import com.example.demo.dto.ProductRequest;
 import com.example.demo.model.Product;
 
 public interface ProductDao {
 	
-	List<Product> getProducts();
+	List<Product> getProducts(ProductCategory category, String search);
 	
 	Product getProductById(Integer productId);
 	
@@ -16,5 +17,7 @@ public interface ProductDao {
 	void updateProduct(Integer productId, ProductRequest productRequest);
 	
 	void deleteProductById(Integer productId);
+	
+	void deleteProductAll();
 
 }

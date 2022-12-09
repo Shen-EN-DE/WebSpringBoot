@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.constant.ProductCategory;
 import com.example.demo.dto.ProductRequest;
 import com.example.demo.model.Product;
 import com.example.demo.service.ProductService;
@@ -29,8 +31,12 @@ public class ProductController {
 	private ProductService productService;
 	
 	@GetMapping("/products")
-	public ResponseEntity<List<Product>> getProducts(){
-		List<Product> productList = productService.getProducts();
+	public ResponseEntity<List<Product>> getProducts(
+			@RequestParam(required = false) ProductCategory category, //因為category並不是必選的狀態，因此required=false這樣就不會綁住了
+			@RequestParam(required = false) String search
+			){
+		
+		List<Product> productList = productService.getProducts(category, search);
 		
 		return ResponseEntity.status(HttpStatus.OK).body(productList);
 		
@@ -91,6 +97,13 @@ public class ProductController {
 		
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		
+	}
+	
+	@DeleteMapping("/products/deleteAll")
+	public ResponseEntity<Product> deleteProductsAll(){
+		productService.deleteProductAll();
+		
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 	
 

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.example.demo.constant.ProductCategory;
 import com.example.demo.dao.ProductDao;
 import com.example.demo.dto.ProductRequest;
 import com.example.demo.model.Product;
@@ -46,9 +47,16 @@ public class ProductServiceImpl implements ProductService{
 	}
 
 	@Override
-	public List<Product> getProducts() {
-		return productDao.getProducts();
+	public List<Product> getProducts(ProductCategory category,String search) {
+		return productDao.getProducts(category,search);
 	}
+
+	@Override
+	public void deleteProductAll() {
+		productDao.deleteProductAll();
+	}
+	
+	
 	
 	
 
