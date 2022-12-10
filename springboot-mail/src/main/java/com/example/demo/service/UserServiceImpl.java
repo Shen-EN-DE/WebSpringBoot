@@ -1,0 +1,46 @@
+package com.example.demo.service;
+
+import java.lang.module.ResolutionException;
+
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.example.demo.dao.UserDao;
+import com.example.demo.dto.UserRegisterRequest;
+import com.example.demo.model.User;
+
+import ch.qos.logback.classic.Logger;
+
+@Component
+public class UserServiceImpl implements UserService{
+	
+	private final static Logger log = (Logger) LoggerFactory.getLogger(UserServiceImpl.class);
+	
+	@Autowired
+	private UserDao userDao;
+
+	@Override
+	public Integer register(UserRegisterRequest userRegisterRequest) {
+		
+		//檢查註冊email
+		User user = userDao.getUserByEmail(userRegisterRequest.getEmail()); //因為要判斷email只能有一筆而已，同一個email不能註冊
+		
+		if (user != null) {
+			log.warn("該email{} 已經被註冊", userRegisterRequest.getEmail());
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+		}
+		
+		//創建帳號
+		return userDao.createUser(userRegisterRequest);
+	}
+
+	@Override
+	public User getUserById(Integer userId) {
+		return userDao.getUserById(userId);
+	}
+	
+	
+}

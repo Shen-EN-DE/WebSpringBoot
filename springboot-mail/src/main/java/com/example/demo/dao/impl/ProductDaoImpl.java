@@ -36,7 +36,7 @@ public class ProductDaoImpl implements ProductDao{
 		Map<String, Object> map = new HashMap<>();
 		
 		//查詢條件
-		sql = addFilteringSql(sql, map, productQueryParams);
+		sql = addFilteringSql(sql, map, productQueryParams); //因為getProduct和countProduct都會用到一樣的，因此可以寫一個function拆分
 		
 		//排序
 		sql = sql + " ORDER BY " + productQueryParams.getOrderBy() + " " + productQueryParams.getSort();
