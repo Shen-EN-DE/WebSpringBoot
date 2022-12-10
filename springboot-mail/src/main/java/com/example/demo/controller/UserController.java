@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.UserLoginRequest;
 import com.example.demo.dto.UserRegisterRequest;
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
@@ -29,4 +30,15 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(user);
 		
 	}
+	
+	@PostMapping("users/login")
+	public ResponseEntity<User> login(@RequestBody UserLoginRequest userLoginRequest) {
+		
+
+		User user = userService.login(userLoginRequest);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(user);
+		
+	}
+	
 }
