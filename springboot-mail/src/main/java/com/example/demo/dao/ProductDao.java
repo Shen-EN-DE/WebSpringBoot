@@ -22,5 +22,7 @@ public interface ProductDao {
 	void deleteProductById(Integer productId);
 	
 	void deleteProductAll();
+	
+	void updateStock(Integer productId, Integer stock);
 
 }
