@@ -11,6 +11,7 @@ import com.example.demo.dao.OrderDao;
 import com.example.demo.dao.ProductDao;
 import com.example.demo.dto.BuyItem;
 import com.example.demo.dto.CreateOrderRequest;
+import com.example.demo.model.Order;
 import com.example.demo.model.OrderItem;
 import com.example.demo.model.Product;
 
@@ -54,6 +55,16 @@ public class OrderServiceImpl implements OrderService{
 		orderDao.createOrderItems(orderId, orderItemList);
 		
 		return orderId;
+	}
+
+	@Override
+	public Order getOrderById(Integer orderId) {
+		Order order = orderDao.getOrderById(orderId);
+		
+		List<OrderItem> orderItemList = orderDao.getOrderItemsByOrderId(orderId);
+		order.setOrderItemList(orderItemList);
+		
+		return order;
 	}
 	
 	
