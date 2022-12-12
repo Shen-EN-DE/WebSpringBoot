@@ -1,19 +1,34 @@
 package com.example.demo.dao.impl;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.hibernate.validator.internal.util.privilegedactions.NewInstance;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.dao.ProductDao;
+import com.example.demo.dto.OrderQueryParams;
 import com.example.demo.dto.ProductQueryParams;
 import com.example.demo.dto.ProductRequest;
+import com.example.demo.model.Order;
 import com.example.demo.model.Product;
+import com.example.demo.service.OrderService;
+import com.example.demo.service.OrderServiceImpl;
+import com.example.demo.util.Page;
 
 import rowmapper.ProductRowMapper;
 
@@ -25,6 +40,36 @@ public class ProductDaoImpl implements ProductDao{
 	@Autowired
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 	
+	@Autowired
+	private OrderService orderService;
+	
+	
+	@GetMapping("/users/{userId}/orders")
+	public ResponseEntity<Page<Order>> getOrders(
+			@PathVariable Integer userId,
+			@RequestParam(defaultValue = "10") @Max(1000) @Min(0) Integer limit,
+			@RequestParam(defaultValue = "0") @Min(0) Integer offset
+			){
+		OrderQueryParams orderQueryParams = new OrderQueryParams();
+		orderQueryParams.setLimit(limit);
+		orderQueryParams.setOffset(offset);
+		orderQueryParams.setUserId(userId);
+		
+		//取得order list
+		List<Order> orderList = orderService.getOrders(orderQueryParams);
+		
+		//取得order總數
+		Integer count = orderService.countOrder(orderQueryParams);
+		
+		//分頁
+		Page<Order> page = new Page<>();
+		page.setLimit(limit);
+		page.setOffset(offset);
+		page.setTotal(count);
+		page.setResult(orderList);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(page);
+	}
 	
 	
 	@Override

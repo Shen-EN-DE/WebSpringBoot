@@ -15,6 +15,7 @@ import com.example.demo.dao.ProductDao;
 import com.example.demo.dao.UserDao;
 import com.example.demo.dto.BuyItem;
 import com.example.demo.dto.CreateOrderRequest;
+import com.example.demo.dto.OrderQueryParams;
 import com.example.demo.model.Order;
 import com.example.demo.model.OrderItem;
 import com.example.demo.model.Product;
@@ -99,6 +100,24 @@ public class OrderServiceImpl implements OrderService{
 		order.setOrderItemList(orderItemList);
 		
 		return order;
+	}
+
+	@Override
+	public Integer countOrder(OrderQueryParams orderQueryParams) {
+		return orderDao.countOrder(orderQueryParams);
+	}
+
+	@Override
+	public List<Order> getOrders(OrderQueryParams orderQueryParams) {
+		List<Order> orderList = orderDao.getOrders(orderQueryParams);
+		
+		for(Order order: orderList) {
+			List<OrderItem> orderItemsList = orderDao.getOrderItemsByOrderId(order.getOrderId());
+			
+			order.setOrderItemList(orderItemsList);
+		}
+		
+		return orderList;
 	}
 	
 	
